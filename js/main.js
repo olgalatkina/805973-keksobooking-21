@@ -1,7 +1,5 @@
 'use strict';
 
-// MockData
-
 const TYPES = [`palace`, `flat`, `house`, `bungalow`];
 const FEATURES = [`wifi`, `dishwasher`, `parking`, `washer`, `elevator`, `conditioner`];
 const PHOTOS = [`http://o0.github.io/assets/images/tokyo/hotel1.jpg`, `http://o0.github.io/assets/images/tokyo/hotel2.jpg`, `http://o0.github.io/assets/images/tokyo/hotel3.jpg`];
@@ -16,11 +14,16 @@ const MAP_MAX_Y = 630;
 const PIN_WIDTH = 62;
 const PIN_HEIGHT = 82;
 const PINS_QUANTITY = 8;
-const mapPins = document.querySelector(`.map__pins`);
-const mapMinX = 0;
-const mapMaxX = mapPins.clientWidth;
+
+const map = document.querySelector(`.map`);
+const mapPins = map.querySelector(`.map__pins`);
+const filterContainer = map.querySelector(`.map__filters-container`);
 
 const pinTemplate = document.querySelector(`#pin`).content.querySelector(`.map__pin`);
+const cardTemplate = document.querySelector(`#card`).content.querySelector(`.map__card`);
+
+const mapMinX = 0;
+const mapMaxX = mapPins.clientWidth;
 
 const shuffleArray = (array) => {
   for (let i = array.length - 1; i > 0; i--) {
@@ -114,6 +117,47 @@ const createPinElement = (obj) => {
   return pin;
 };
 
+const createCardElement = (obj) => {
+  const card = cardTemplate.cloneNode(true);
+  card.querySelector(`.popup__avatar`).src = obj.author.avatar;
+  card.querySelector(`.popup__title`).textContent = obj.offer.title;
+  card.querySelector(`.popup__text--address`).textContent = obj.offer.address;
+  card.querySelector(`.popup__text--price`).textContent = obj.offer.price;
+  card.querySelector(`.popup__text--capacity`).textContent = `${obj.offer.rooms} комнаты для ${obj.offer.guests} гостей`;
+  card.querySelector(`.popup__type`).textContent = obj.offer.type;
+  card.querySelector(`.popup__text--time`).textContent = `Заезд после ${obj.offer.checkin}, выезд\u00A0до ${obj.offer.checkout}`;
+
+  const features = card.querySelectorAll(`.popup__feature`);
+
+  for (let feature of features) {
+    const str = feature.className.match(/--(\w+)/)[1];
+    if (!obj.offer.features.includes(str)) {
+      feature.classList.add(`hidden`);
+    }
+  }
+
+  card.querySelector(`.popup__description`).textContent = obj.offer.description;
+
+  if (obj.offer.photos.length > 1) {
+    const imgContainer = card.querySelector(`.popup__photos`);
+    const img = card.querySelector(`.popup__photo`);
+
+    obj.offer.photos.forEach((photo, i) => {
+      if (i === 0) {
+        card.querySelector(`.popup__photo`).src = photo;
+      } else {
+        const newImg = img.cloneNode(true);
+        newImg.src = photo;
+        imgContainer.append(newImg);
+      }
+    });
+  } else {
+    card.querySelector(`.popup__photo`).src = obj.offer.photos[0];
+  }
+
+  return card;
+};
+
 const createFragment = (array, callback) => {
   const fragment = document.createDocumentFragment();
   for (let i = 0; i < array.length; i++) {
@@ -125,5 +169,7 @@ const createFragment = (array, callback) => {
 const pinsFragment = createFragment(pinsArray, createPinElement);
 mapPins.append(pinsFragment);
 
-const map = document.querySelector(`.map`);
+const card = createCardElement(pinsArray[0]);
+map.insertBefore(card, filterContainer);
+
 map.classList.remove(`map--faded`);
