@@ -1,8 +1,19 @@
-'use strict';
+"use strict";
 
 const TYPES = [`palace`, `flat`, `house`, `bungalow`];
-const FEATURES = [`wifi`, `dishwasher`, `parking`, `washer`, `elevator`, `conditioner`];
-const PHOTOS = [`http://o0.github.io/assets/images/tokyo/hotel1.jpg`, `http://o0.github.io/assets/images/tokyo/hotel2.jpg`, `http://o0.github.io/assets/images/tokyo/hotel3.jpg`];
+const FEATURES = [
+  `wifi`,
+  `dishwasher`,
+  `parking`,
+  `washer`,
+  `elevator`,
+  `conditioner`,
+];
+const PHOTOS = [
+  `http://o0.github.io/assets/images/tokyo/hotel1.jpg`,
+  `http://o0.github.io/assets/images/tokyo/hotel2.jpg`,
+  `http://o0.github.io/assets/images/tokyo/hotel3.jpg`,
+];
 const TIMES = [`12:00`, `13:00`, `14:00`];
 const ROOMS = 5;
 const GUESTS = 10;
@@ -19,8 +30,12 @@ const map = document.querySelector(`.map`);
 const mapPins = map.querySelector(`.map__pins`);
 const filterContainer = map.querySelector(`.map__filters-container`);
 
-const pinTemplate = document.querySelector(`#pin`).content.querySelector(`.map__pin`);
-const cardTemplate = document.querySelector(`#card`).content.querySelector(`.map__card`);
+const pinTemplate = document
+  .querySelector(`#pin`)
+  .content.querySelector(`.map__pin`);
+const cardTemplate = document
+  .querySelector(`#card`)
+  .content.querySelector(`.map__card`);
 
 const mapMinX = 0;
 const mapMaxX = mapPins.clientWidth;
@@ -62,7 +77,9 @@ const createTitle = (str) => {
 
 const getDescription = (str) => {
   const temp = str.split(` `);
-  const newStr = shuffleArray(temp).splice(0, getRandomInRange(4, temp.length)).join(` `);
+  const newStr = shuffleArray(temp)
+    .splice(0, getRandomInRange(4, temp.length))
+    .join(` `);
   const firstCapitalStr = newStr.replace(newStr[0], newStr[0].toUpperCase());
   if (firstCapitalStr[firstCapitalStr.length - 1] === `,`) {
     return `${firstCapitalStr.slice(0, -1)}.`;
@@ -71,27 +88,32 @@ const getDescription = (str) => {
 };
 
 const createAdvertisingObj = (index) => {
+  const coord = {
+    x: getRandomInRange(mapMinX, mapMaxX),
+    y: getRandomInRange(MAP_MIN_Y, MAP_MAX_Y),
+  };
+
   return {
-    "author": {
-      "avatar": getUrl(index),
+    author: {
+      avatar: getUrl(index),
     },
-    "offer": {
-      "title": createTitle(fishingText),
-      "address": `${getRandomInRange(mapMinX, mapMaxX)}, ${getRandomInRange(MAP_MIN_Y, MAP_MAX_Y - PIN_HEIGHT)}`,
-      "price": getRandomInRange(0, PRICE),
-      "type": getRandomElement(TYPES),
-      "rooms": getRandomInRange(0, ROOMS),
-      "guests": getRandomInRange(1, GUESTS),
-      "checkin": getRandomElement(TIMES),
-      "checkout": getRandomElement(TIMES),
-      "features": getRandomArray(FEATURES),
-      "description": getDescription(fishingText),
-      "photos": getRandomArray(PHOTOS),
+    offer: {
+      title: createTitle(fishingText),
+      address: `${coord.x}, ${coord.y}`,
+      price: getRandomInRange(0, PRICE),
+      type: getRandomElement(TYPES),
+      rooms: getRandomInRange(0, ROOMS),
+      guests: getRandomInRange(1, GUESTS),
+      checkin: getRandomElement(TIMES),
+      checkout: getRandomElement(TIMES),
+      features: getRandomArray(FEATURES),
+      description: getDescription(fishingText),
+      photos: getRandomArray(PHOTOS),
     },
-    "location": {
-      "x": getRandomInRange(mapMinX, mapMaxX - PIN_WIDTH),
-      "y": getRandomInRange(MAP_MIN_Y, MAP_MAX_Y),
-    }
+    location: {
+      x: coord.x - PIN_WIDTH / 2,
+      y: coord.y - PIN_HEIGHT,
+    },
   };
 };
 
@@ -123,9 +145,13 @@ const createCardElement = (obj) => {
   card.querySelector(`.popup__title`).textContent = obj.offer.title;
   card.querySelector(`.popup__text--address`).textContent = obj.offer.address;
   card.querySelector(`.popup__text--price`).textContent = obj.offer.price;
-  card.querySelector(`.popup__text--capacity`).textContent = `${obj.offer.rooms} комнаты для ${obj.offer.guests} гостей`;
+  card.querySelector(
+    `.popup__text--capacity`
+  ).textContent = `${obj.offer.rooms} комнаты для ${obj.offer.guests} гостей`;
   card.querySelector(`.popup__type`).textContent = obj.offer.type;
-  card.querySelector(`.popup__text--time`).textContent = `Заезд после ${obj.offer.checkin}, выезд\u00A0до ${obj.offer.checkout}`;
+  card.querySelector(
+    `.popup__text--time`
+  ).textContent = `Заезд после ${obj.offer.checkin}, выезд\u00A0до ${obj.offer.checkout}`;
 
   const features = card.querySelectorAll(`.popup__feature`);
 
