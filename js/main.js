@@ -1,8 +1,19 @@
-'use strict';
+"use strict";
 
 const TYPES = [`palace`, `flat`, `house`, `bungalow`];
-const FEATURES = [`wifi`, `dishwasher`, `parking`, `washer`, `elevator`, `conditioner`];
-const PHOTOS = [`http://o0.github.io/assets/images/tokyo/hotel1.jpg`, `http://o0.github.io/assets/images/tokyo/hotel2.jpg`, `http://o0.github.io/assets/images/tokyo/hotel3.jpg`];
+const FEATURES = [
+  `wifi`,
+  `dishwasher`,
+  `parking`,
+  `washer`,
+  `elevator`,
+  `conditioner`,
+];
+const PHOTOS = [
+  `http://o0.github.io/assets/images/tokyo/hotel1.jpg`,
+  `http://o0.github.io/assets/images/tokyo/hotel2.jpg`,
+  `http://o0.github.io/assets/images/tokyo/hotel3.jpg`,
+];
 const TIMES = [`12:00`, `13:00`, `14:00`];
 const ROOMS = 5;
 const GUESTS = 10;
@@ -11,16 +22,25 @@ const fishingText = `Neque porro quisquam est qui dolorem ipsum quia dolor sit a
 
 const MAP_MIN_Y = 130;
 const MAP_MAX_Y = 630;
-const PIN_WIDTH = 62;
-const PIN_HEIGHT = 82;
+const PIN_WIDTH = 50;
+const PIN_HEIGHT = 70;
 const PINS_QUANTITY = 8;
+const MAIN_PIN = {
+  width: 62,
+  height: 62,
+  legHeight: 22,
+};
 
 const map = document.querySelector(`.map`);
 const mapPins = map.querySelector(`.map__pins`);
-const filterContainer = map.querySelector(`.map__filters-container`);
+// const filterContainer = map.querySelector(`.map__filters-container`);
 
-const pinTemplate = document.querySelector(`#pin`).content.querySelector(`.map__pin`);
-const cardTemplate = document.querySelector(`#card`).content.querySelector(`.map__card`);
+const pinTemplate = document
+  .querySelector(`#pin`)
+  .content.querySelector(`.map__pin`);
+// const cardTemplate = document
+//   .querySelector(`#card`)
+//   .content.querySelector(`.map__card`);
 
 const mapMinX = 0;
 const mapMaxX = mapPins.clientWidth;
@@ -62,7 +82,9 @@ const createTitle = (str) => {
 
 const getDescription = (str) => {
   const temp = str.split(` `);
-  const newStr = shuffleArray(temp).splice(0, getRandomInRange(4, temp.length)).join(` `);
+  const newStr = shuffleArray(temp)
+    .splice(0, getRandomInRange(4, temp.length))
+    .join(` `);
   const firstCapitalStr = newStr.replace(newStr[0], newStr[0].toUpperCase());
   if (firstCapitalStr[firstCapitalStr.length - 1] === `,`) {
     return `${firstCapitalStr.slice(0, -1)}.`;
@@ -71,27 +93,32 @@ const getDescription = (str) => {
 };
 
 const createAdvertisingObj = (index) => {
+  const coord = {
+    x: getRandomInRange(mapMinX, mapMaxX),
+    y: getRandomInRange(MAP_MIN_Y, MAP_MAX_Y),
+  };
+
   return {
-    "author": {
-      "avatar": getUrl(index),
+    author: {
+      avatar: getUrl(index),
     },
-    "offer": {
-      "title": createTitle(fishingText),
-      "address": `${getRandomInRange(mapMinX, mapMaxX)}, ${getRandomInRange(MAP_MIN_Y, MAP_MAX_Y - PIN_HEIGHT)}`,
-      "price": getRandomInRange(0, PRICE),
-      "type": getRandomElement(TYPES),
-      "rooms": getRandomInRange(0, ROOMS),
-      "guests": getRandomInRange(1, GUESTS),
-      "checkin": getRandomElement(TIMES),
-      "checkout": getRandomElement(TIMES),
-      "features": getRandomArray(FEATURES),
-      "description": getDescription(fishingText),
-      "photos": getRandomArray(PHOTOS),
+    offer: {
+      title: createTitle(fishingText),
+      address: `${coord.x}, ${coord.y}`,
+      price: getRandomInRange(0, PRICE),
+      type: getRandomElement(TYPES),
+      rooms: getRandomInRange(0, ROOMS),
+      guests: getRandomInRange(1, GUESTS),
+      checkin: getRandomElement(TIMES),
+      checkout: getRandomElement(TIMES),
+      features: getRandomArray(FEATURES),
+      description: getDescription(fishingText),
+      photos: getRandomArray(PHOTOS),
     },
-    "location": {
-      "x": getRandomInRange(mapMinX, mapMaxX - PIN_WIDTH),
-      "y": getRandomInRange(MAP_MIN_Y, MAP_MAX_Y),
-    }
+    location: {
+      x: coord.x - PIN_WIDTH / 2,
+      y: coord.y - PIN_HEIGHT,
+    },
   };
 };
 
@@ -117,15 +144,18 @@ const createPinElement = (obj) => {
   return pin;
 };
 
+/*
 const createCardElement = (obj) => {
   const card = cardTemplate.cloneNode(true);
   card.querySelector(`.popup__avatar`).src = obj.author.avatar;
   card.querySelector(`.popup__title`).textContent = obj.offer.title;
   card.querySelector(`.popup__text--address`).textContent = obj.offer.address;
   card.querySelector(`.popup__text--price`).textContent = obj.offer.price;
-  card.querySelector(`.popup__text--capacity`).textContent = `${obj.offer.rooms} комнаты для ${obj.offer.guests} гостей`;
+  card.querySelector(`.popup__text--capacity`)
+    .textContent = `${obj.offer.rooms} комнаты для ${obj.offer.guests} гостей`;
   card.querySelector(`.popup__type`).textContent = obj.offer.type;
-  card.querySelector(`.popup__text--time`).textContent = `Заезд после ${obj.offer.checkin}, выезд\u00A0до ${obj.offer.checkout}`;
+  card.querySelector(`.popup__text--time`)
+    .textContent = `Заезд после ${obj.offer.checkin}, выезд\u00A0до ${obj.offer.checkout}`;
 
   const features = card.querySelectorAll(`.popup__feature`);
 
@@ -157,7 +187,7 @@ const createCardElement = (obj) => {
 
   return card;
 };
-
+*/
 const createFragment = (array, callback) => {
   const fragment = document.createDocumentFragment();
   for (let i = 0; i < array.length; i++) {
@@ -167,9 +197,72 @@ const createFragment = (array, callback) => {
 };
 
 const pinsFragment = createFragment(pinsArray, createPinElement);
-mapPins.append(pinsFragment);
 
-const card = createCardElement(pinsArray[0]);
-map.insertBefore(card, filterContainer);
 
-map.classList.remove(`map--faded`);
+const adForm = document.querySelector(`.ad-form`);
+const fieldsets = adForm.querySelectorAll(`fieldset`);
+const mapForm = document.querySelector(`.map__filters`);
+const mapSelects = mapForm.querySelectorAll(`[id^="housing-"]`);
+const pinMain = map.querySelector(`.map__pin--main`);
+const address = adForm.querySelector(`#address`);
+
+// ------------ Disabled Elements
+const addDisabled = (collection) => {
+  collection.forEach((elem) => elem.setAttribute(`disabled`, ``));
+};
+
+addDisabled(fieldsets);
+addDisabled(mapSelects);
+
+// ------------ Set Coordinates
+const setCoordinate = (elem, input) => {
+  let coords = elem.getBoundingClientRect();
+  let x = coords.left + scrollX + coords.width / 2;
+  let y = coords.top + scrollY + coords.height / 2;
+
+  input.value = `${x} ${y}`;
+};
+setCoordinate(pinMain, address);
+
+const updateCoordinate = (elem, input, obj) => {
+  let coords = elem.getBoundingClientRect();
+  let x = coords.left + scrollX + coords.width / 2;
+  let y = coords.top + scrollY + coords.height + obj.legHeight;
+
+  input.value = `${x} ${y}`;
+};
+
+// ------------ Activate Page
+const removeDisabled = (collection) => {
+  collection.forEach((elem) => elem.removeAttribute(`disabled`));
+};
+
+const activatePage = () => {
+  map.classList.remove(`map--faded`);
+  mapPins.append(pinsFragment);
+  adForm.classList.remove(`ad-form--disabled`);
+  removeDisabled(fieldsets);
+  removeDisabled(mapSelects);
+  updateCoordinate(pinMain, address, MAIN_PIN);
+};
+
+const onPinMainMousedown = (evt) => {
+  if (evt.button === 0) {
+    activatePage();
+  }
+  pinMain.removeEventListener(`mousedown`, onPinMainMousedown);
+};
+
+const onPinMainKeydown = (evt) => {
+  if (evt.key === `Enter`) {
+    activatePage();
+  }
+  pinMain.removeEventListener(`keydown`, onPinMainKeydown);
+};
+
+pinMain.addEventListener(`mousedown`, onPinMainMousedown);
+pinMain.addEventListener(`keydown`, onPinMainKeydown);
+
+// ------------ Render Cards
+// const card = createCardElement(pinsArray[0]);
+// map.insertBefore(card, filterContainer);
