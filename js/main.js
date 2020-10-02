@@ -28,14 +28,14 @@ const PINS_QUANTITY = 8;
 
 const map = document.querySelector(`.map`);
 const mapPins = map.querySelector(`.map__pins`);
-const filterContainer = map.querySelector(`.map__filters-container`);
+// const filterContainer = map.querySelector(`.map__filters-container`);
 
 const pinTemplate = document
   .querySelector(`#pin`)
   .content.querySelector(`.map__pin`);
-const cardTemplate = document
-  .querySelector(`#card`)
-  .content.querySelector(`.map__card`);
+// const cardTemplate = document
+//   .querySelector(`#card`)
+//   .content.querySelector(`.map__card`);
 
 const mapMinX = 0;
 const mapMaxX = mapPins.clientWidth;
@@ -139,6 +139,7 @@ const createPinElement = (obj) => {
   return pin;
 };
 
+/*
 const createCardElement = (obj) => {
   const card = cardTemplate.cloneNode(true);
   card.querySelector(`.popup__avatar`).src = obj.author.avatar;
@@ -181,7 +182,7 @@ const createCardElement = (obj) => {
 
   return card;
 };
-
+*/
 const createFragment = (array, callback) => {
   const fragment = document.createDocumentFragment();
   for (let i = 0; i < array.length; i++) {
@@ -213,17 +214,30 @@ const removeDisabled = (collection) => {
   collection.forEach((elem) => elem.removeAttribute(`disabled`));
 };
 
+const activatePage = () => {
+  map.classList.remove(`map--faded`);
+  mapPins.append(pinsFragment);
+  adForm.classList.remove(`ad-form--disabled`);
+  removeDisabled(fieldsets);
+  removeDisabled(mapSelects);
+};
+
 const onPinMainMousedown = (evt) => {
   if (evt.button === 0) {
-    map.classList.remove(`map--faded`);
-    mapPins.append(pinsFragment);
-    adForm.classList.remove(`ad-form--disabled`);
-    removeDisabled(fieldsets);
-    removeDisabled(mapSelects);
+    activatePage();
   }
+  pinMain.removeEventListener(onPinMainMousedown);
+};
+
+const onPinMainKeydown = (evt) => {
+  if (evt.key === `Enter`) {
+    activatePage();
+  }
+  pinMain.removeEventListener(onPinMainKeydown);
 };
 
 pinMain.addEventListener(`mousedown`, onPinMainMousedown);
+pinMain.addEventListener(`keydown`, onPinMainKeydown);
 
 // ------------ Render Cards
 // const card = createCardElement(pinsArray[0]);
