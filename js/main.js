@@ -145,13 +145,11 @@ const createCardElement = (obj) => {
   card.querySelector(`.popup__title`).textContent = obj.offer.title;
   card.querySelector(`.popup__text--address`).textContent = obj.offer.address;
   card.querySelector(`.popup__text--price`).textContent = obj.offer.price;
-  card.querySelector(
-    `.popup__text--capacity`
-  ).textContent = `${obj.offer.rooms} комнаты для ${obj.offer.guests} гостей`;
+  card.querySelector(`.popup__text--capacity`)
+    .textContent = `${obj.offer.rooms} комнаты для ${obj.offer.guests} гостей`;
   card.querySelector(`.popup__type`).textContent = obj.offer.type;
-  card.querySelector(
-    `.popup__text--time`
-  ).textContent = `Заезд после ${obj.offer.checkin}, выезд\u00A0до ${obj.offer.checkout}`;
+  card.querySelector(`.popup__text--time`)
+    .textContent = `Заезд после ${obj.offer.checkin}, выезд\u00A0до ${obj.offer.checkout}`;
 
   const features = card.querySelectorAll(`.popup__feature`);
 
@@ -193,9 +191,40 @@ const createFragment = (array, callback) => {
 };
 
 const pinsFragment = createFragment(pinsArray, createPinElement);
-mapPins.append(pinsFragment);
 
-const card = createCardElement(pinsArray[0]);
-map.insertBefore(card, filterContainer);
+// ------------ Disabled Elements
+const adForm = document.querySelector(`.ad-form`);
+const fieldsets = adForm.querySelectorAll(`fieldset`);
 
-map.classList.remove(`map--faded`);
+const mapForm = document.querySelector(`.map__filters`);
+const mapSelects = mapForm.querySelectorAll(`[id^="housing-"]`);
+
+const addDisabled = (collection) => {
+  collection.forEach((elem) => elem.setAttribute(`disabled`, ``));
+};
+
+addDisabled(fieldsets);
+addDisabled(mapSelects);
+
+// ------------ Activate Page
+const pinMain = map.querySelector(`.map__pin--main`);
+
+const removeDisabled = (collection) => {
+  collection.forEach((elem) => elem.removeAttribute(`disabled`));
+};
+
+const onPinMainMousedown = (evt) => {
+  if (evt.button === 0) {
+    map.classList.remove(`map--faded`);
+    mapPins.append(pinsFragment);
+    adForm.classList.remove(`ad-form--disabled`);
+    removeDisabled(fieldsets);
+    removeDisabled(mapSelects);
+  }
+};
+
+pinMain.addEventListener(`mousedown`, onPinMainMousedown);
+
+// ------------ Render Cards
+// const card = createCardElement(pinsArray[0]);
+// map.insertBefore(card, filterContainer);
