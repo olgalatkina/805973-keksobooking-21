@@ -22,9 +22,14 @@ const fishingText = `Neque porro quisquam est qui dolorem ipsum quia dolor sit a
 
 const MAP_MIN_Y = 130;
 const MAP_MAX_Y = 630;
-const PIN_WIDTH = 62;
-const PIN_HEIGHT = 82;
+const PIN_WIDTH = 50;
+const PIN_HEIGHT = 70;
 const PINS_QUANTITY = 8;
+const MAIN_PIN = {
+  width: 62,
+  height: 62,
+  legHeight: 22,
+};
 
 const map = document.querySelector(`.map`);
 const mapPins = map.querySelector(`.map__pins`);
@@ -193,13 +198,15 @@ const createFragment = (array, callback) => {
 
 const pinsFragment = createFragment(pinsArray, createPinElement);
 
-// ------------ Disabled Elements
+
 const adForm = document.querySelector(`.ad-form`);
 const fieldsets = adForm.querySelectorAll(`fieldset`);
-
 const mapForm = document.querySelector(`.map__filters`);
 const mapSelects = mapForm.querySelectorAll(`[id^="housing-"]`);
+const pinMain = map.querySelector(`.map__pin--main`);
+const address = adForm.querySelector(`#address`);
 
+// ------------ Disabled Elements
 const addDisabled = (collection) => {
   collection.forEach((elem) => elem.setAttribute(`disabled`, ``));
 };
@@ -207,9 +214,25 @@ const addDisabled = (collection) => {
 addDisabled(fieldsets);
 addDisabled(mapSelects);
 
-// ------------ Activate Page
-const pinMain = map.querySelector(`.map__pin--main`);
+// ------------ Set Coordinates
+const setCoordinate = (elem, input) => {
+  let coords = elem.getBoundingClientRect();
+  let x = coords.left + scrollX + coords.width / 2;
+  let y = coords.top + scrollY + coords.height / 2;
 
+  input.value = `${x} ${y}`;
+};
+setCoordinate(pinMain, address);
+
+const updateCoordinate = (elem, input, obj) => {
+  let coords = elem.getBoundingClientRect();
+  let x = coords.left + scrollX + coords.width / 2;
+  let y = coords.top + scrollY + coords.height + obj.legHeight;
+
+  input.value = `${x} ${y}`;
+};
+
+// ------------ Activate Page
 const removeDisabled = (collection) => {
   collection.forEach((elem) => elem.removeAttribute(`disabled`));
 };
@@ -220,20 +243,21 @@ const activatePage = () => {
   adForm.classList.remove(`ad-form--disabled`);
   removeDisabled(fieldsets);
   removeDisabled(mapSelects);
+  updateCoordinate(pinMain, address, MAIN_PIN);
 };
 
 const onPinMainMousedown = (evt) => {
   if (evt.button === 0) {
     activatePage();
   }
-  pinMain.removeEventListener(onPinMainMousedown);
+  pinMain.removeEventListener(`mousedown`, onPinMainMousedown);
 };
 
 const onPinMainKeydown = (evt) => {
   if (evt.key === `Enter`) {
     activatePage();
   }
-  pinMain.removeEventListener(onPinMainKeydown);
+  pinMain.removeEventListener(`keydown`, onPinMainKeydown);
 };
 
 pinMain.addEventListener(`mousedown`, onPinMainMousedown);
