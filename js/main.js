@@ -1,6 +1,23 @@
 "use strict";
 
-const TYPES = [`palace`, `flat`, `house`, `bungalow`];
+const OFFER_TYPES = {
+  bungalow: {
+    minPrice: 0,
+    translate: `Бунгало`
+  },
+  flat: {
+    minPrice: 1000,
+    translate: `Квартира`
+  },
+  house: {
+    minPrice: 5000,
+    translate: `Дом`
+  },
+  palace: {
+    minPrice: 10000,
+    translate: `Дворец`
+  }
+};
 const FEATURES = [
   `wifi`,
   `dishwasher`,
@@ -106,7 +123,7 @@ const createAdvertisingObj = (index) => {
       title: createTitle(fishingText),
       address: `${coord.x}, ${coord.y}`,
       price: getRandomInRange(0, PRICE),
-      type: getRandomElement(TYPES),
+      type: getRandomElement(Object.keys(OFFER_TYPES)),
       rooms: getRandomInRange(0, ROOMS),
       guests: getRandomInRange(1, GUESTS),
       checkin: getRandomElement(TIMES),
@@ -278,7 +295,7 @@ const showCard = (id) => {
 const onPinClick = (evt) => {
   const pin = evt.target.closest(`.map__pin:not(.map__pin--main)`);
 
-  if (isPin || !pin) {
+  if (!pin || isPin) {
     return;
   }
 
@@ -296,5 +313,31 @@ const onCardCloseClick = (evt) => {
 
 map.addEventListener(`click`, onPinClick);
 
-
 // ------------ Form Validation
+const housingType = adForm.querySelector(`#type`);
+const price = adForm.querySelector(`#price`);
+const arrival = adForm.querySelector(`#timein`);
+const departure = adForm.querySelector(`#timeout`);
+
+const hasTypeSelect = () => {
+  const type = housingType.value;
+  const newValue = OFFER_TYPES[type].minPrice;
+  price.min = newValue;
+  price.placeholder = newValue;
+};
+
+const hasPrice = () => {
+  console.log(price.value);
+};
+
+const changeTimeDeparture = () => {
+  arrival.value = departure.value;
+};
+const changeTimeArrival = () => {
+  departure.value = arrival.value;
+};
+
+housingType.addEventListener(`change`, hasTypeSelect);
+price.addEventListener(`input`, hasPrice);
+arrival.addEventListener(`change`, changeTimeArrival);
+departure.addEventListener(`change`, changeTimeDeparture);

@@ -211,6 +211,7 @@
                   id="avatar"
                   name="avatar"
                   class="ad-form-header__input visually-hidden"
+                  accept="image/*"
                 />
                 <label class="ad-form-header__drop-zone" for="avatar"
                   >Загрузить<br />фото...</label
@@ -234,8 +235,8 @@
               name="title"
               type="text"
               placeholder="Милая, уютная квартирка в центре Токио"
-              minlength="2"
-              maxlength="30"
+              minlength="30"
+              maxlength="100"
               required
             />
           </fieldset>
@@ -259,8 +260,8 @@
               name="price"
               type="number"
               placeholder="5000"
-              min="1000"
-              max="100000"
+              min="0"
+              max="1000000"
               required
             />
           </fieldset>
@@ -386,6 +387,7 @@
                   id="images"
                   name="images"
                   class="ad-form__input visually-hidden"
+                  accept="image/*"
                 />
                 <label for="images" class="ad-form__drop-zone"
                   >Загрузить<br />фото...</label
