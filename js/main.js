@@ -326,18 +326,19 @@ const hasTypeSelect = () => {
   price.placeholder = newValue;
 };
 
-const hasPrice = () => {
-  console.log(price.value);
-};
+// const hasPrice = () => {
+//   console.log(price.value);
+// };
 
 const changeTimeDeparture = () => {
   arrival.value = departure.value;
 };
+
 const changeTimeArrival = () => {
   departure.value = arrival.value;
 };
 
 housingType.addEventListener(`change`, hasTypeSelect);
-price.addEventListener(`input`, hasPrice);
+// price.addEventListener(`input`, hasPrice);
 arrival.addEventListener(`change`, changeTimeArrival);
 departure.addEventListener(`change`, changeTimeDeparture);
