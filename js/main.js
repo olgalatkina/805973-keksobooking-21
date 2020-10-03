@@ -1,6 +1,23 @@
 "use strict";
 
-const TYPES = [`palace`, `flat`, `house`, `bungalow`];
+const OFFER_TYPES = {
+  bungalow: {
+    minPrice: 0,
+    translate: `Бунгало`
+  },
+  flat: {
+    minPrice: 1000,
+    translate: `Квартира`
+  },
+  house: {
+    minPrice: 5000,
+    translate: `Дом`
+  },
+  palace: {
+    minPrice: 10000,
+    translate: `Дворец`
+  }
+};
 const FEATURES = [
   `wifi`,
   `dishwasher`,
@@ -33,14 +50,14 @@ const MAIN_PIN = {
 
 const map = document.querySelector(`.map`);
 const mapPins = map.querySelector(`.map__pins`);
-// const filterContainer = map.querySelector(`.map__filters-container`);
+const filterContainer = map.querySelector(`.map__filters-container`);
 
 const pinTemplate = document
   .querySelector(`#pin`)
   .content.querySelector(`.map__pin`);
-// const cardTemplate = document
-//   .querySelector(`#card`)
-//   .content.querySelector(`.map__card`);
+const cardTemplate = document
+  .querySelector(`#card`)
+  .content.querySelector(`.map__card`);
 
 const mapMinX = 0;
 const mapMaxX = mapPins.clientWidth;
@@ -106,7 +123,7 @@ const createAdvertisingObj = (index) => {
       title: createTitle(fishingText),
       address: `${coord.x}, ${coord.y}`,
       price: getRandomInRange(0, PRICE),
-      type: getRandomElement(TYPES),
+      type: getRandomElement(Object.keys(OFFER_TYPES)),
       rooms: getRandomInRange(0, ROOMS),
       guests: getRandomInRange(1, GUESTS),
       checkin: getRandomElement(TIMES),
@@ -133,7 +150,7 @@ const getPinsArray = (quantity) => {
   return pinsArray;
 };
 
-const pinsArray = getPinsArray(PINS_QUANTITY);
+const pinsDataArray = getPinsArray(PINS_QUANTITY);
 
 const createPinElement = (obj) => {
   const pin = pinTemplate.cloneNode(true);
@@ -144,7 +161,6 @@ const createPinElement = (obj) => {
   return pin;
 };
 
-/*
 const createCardElement = (obj) => {
   const card = cardTemplate.cloneNode(true);
   card.querySelector(`.popup__avatar`).src = obj.author.avatar;
@@ -187,17 +203,16 @@ const createCardElement = (obj) => {
 
   return card;
 };
-*/
+
 const createFragment = (array, callback) => {
   const fragment = document.createDocumentFragment();
-  for (let i = 0; i < array.length; i++) {
-    fragment.append(callback(array[i]));
-  }
+  array.forEach((el, i) => {
+    const element = callback(el);
+    element.dataset.id = i;
+    fragment.append(element);
+  });
   return fragment;
 };
-
-const pinsFragment = createFragment(pinsArray, createPinElement);
-
 
 const adForm = document.querySelector(`.ad-form`);
 const fieldsets = adForm.querySelectorAll(`fieldset`);
@@ -239,6 +254,7 @@ const removeDisabled = (collection) => {
 
 const activatePage = () => {
   map.classList.remove(`map--faded`);
+  const pinsFragment = createFragment(pinsDataArray, createPinElement);
   mapPins.append(pinsFragment);
   adForm.classList.remove(`ad-form--disabled`);
   removeDisabled(fieldsets);
@@ -264,5 +280,65 @@ pinMain.addEventListener(`mousedown`, onPinMainMousedown);
 pinMain.addEventListener(`keydown`, onPinMainKeydown);
 
 // ------------ Render Cards
-// const card = createCardElement(pinsArray[0]);
-// map.insertBefore(card, filterContainer);
+let currentCard = null;
+let isPin = false;
+
+const showCard = (id) => {
+  const card = createCardElement(pinsDataArray[id]);
+  map.insertBefore(card, filterContainer);
+  currentCard = card;
+
+  const closeCardButton = currentCard.querySelector(`.popup__close`);
+  closeCardButton.addEventListener(`click`, onCardCloseClick);
+};
+
+const onPinClick = (evt) => {
+  const pin = evt.target.closest(`.map__pin:not(.map__pin--main)`);
+
+  if (!pin || isPin) {
+    return;
+  }
+
+  const id = pin.dataset.id;
+  isPin = true;
+  showCard(id);
+};
+
+const onCardCloseClick = (evt) => {
+  const card = evt.target.closest(`.map__card`);
+  card.remove();
+  currentCard = null;
+  isPin = false;
+};
+
+map.addEventListener(`click`, onPinClick);
+
+// ------------ Form Validation
+const housingType = adForm.querySelector(`#type`);
+const price = adForm.querySelector(`#price`);
+const arrival = adForm.querySelector(`#timein`);
+const departure = adForm.querySelector(`#timeout`);
+
+const hasTypeSelect = () => {
+  const type = housingType.value;
+  const newValue = OFFER_TYPES[type].minPrice;
+  price.min = newValue;
+  price.placeholder = newValue;
+};
+
+// const hasPrice = () => {
+//   console.log(price.value);
+// };
+
+const changeTimeDeparture = () => {
+  arrival.value = departure.value;
+};
+
+const changeTimeArrival = () => {
+  departure.value = arrival.value;
+};
+
+housingType.addEventListener(`change`, hasTypeSelect);
+// price.addEventListener(`input`, hasPrice);
+arrival.addEventListener(`change`, changeTimeArrival);
+departure.addEventListener(`change`, changeTimeDeparture);
