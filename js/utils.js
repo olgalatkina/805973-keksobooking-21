@@ -50,6 +50,34 @@
     return fragment;
   };
 
+  const setDisabled = (collection) => {
+    collection.forEach((elem) => elem.setAttribute(`disabled`, ``));
+  };
+
+  const removeDisabled = (collection) => {
+    collection.forEach((elem) => elem.removeAttribute(`disabled`));
+  };
+
+  const setCoordinate = (elem, input) => {
+    let coords = elem.getBoundingClientRect();
+    let x = coords.left + scrollX + coords.width / 2;
+    let y = coords.top + scrollY + coords.height / 2;
+
+    input.value = `${x} ${y}`;
+  };
+
+  const updateCoordinate = (elem, input, obj) => {
+    let coords = elem.getBoundingClientRect();
+    let x = coords.left + scrollX + coords.width / 2;
+    let y;
+    if (obj) {
+      y = coords.top + scrollY + coords.height + obj.legHeight;
+    }
+    y = coords.top + scrollY + coords.height;
+
+    input.value = `${x} ${y}`;
+  };
+
   window.utils = {
     shuffleArray,
     getRandomInRange,
@@ -57,6 +85,10 @@
     getRandomArray,
     createTitle,
     getDescription,
-    createFragment
+    createFragment,
+    setDisabled,
+    removeDisabled,
+    setCoordinate,
+    updateCoordinate
   };
 })();

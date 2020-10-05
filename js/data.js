@@ -33,8 +33,8 @@
   const PIN_HEIGHT = 70;
   const PINS_QUANTITY = 8;
   const MAIN_PIN = {
-    width: 62,
-    height: 62,
+    width: 65,
+    height: 65,
     legHeight: 22,
   };
 
