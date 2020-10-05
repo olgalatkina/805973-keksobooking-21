@@ -9,45 +9,25 @@ const adForm = document.querySelector(`.ad-form`);
 const adFielsets = adForm.querySelectorAll(`fieldset`);
 const adAddress = adForm.querySelector(`#address`);
 
-// ------------ Disabled Elements
-const setDisabled = (collection) => {
-  collection.forEach((elem) => elem.setAttribute(`disabled`, ``));
-};
-
-setDisabled(adFielsets);
-setDisabled(mapSelects);
-
-// ------------ Set Coordinates
-const setCoordinate = (elem, input) => {
-  let coords = elem.getBoundingClientRect();
-  let x = coords.left + scrollX + coords.width / 2;
-  let y = coords.top + scrollY + coords.height / 2;
-
-  input.value = `${x} ${y}`;
-};
-setCoordinate(pinMain, adAddress);
-
-const updateCoordinate = (elem, input, obj) => {
-  let coords = elem.getBoundingClientRect();
-  let x = coords.left + scrollX + coords.width / 2;
-  let y = coords.top + scrollY + coords.height + obj.legHeight;
-
-  input.value = `${x} ${y}`;
-};
+window.utils.setDisabled(adFielsets);
+window.utils.setDisabled(mapSelects);
+window.utils.setCoordinate(pinMain, adAddress);
 
 // ------------ Activate Page
-const removeDisabled = (collection) => {
-  collection.forEach((elem) => elem.removeAttribute(`disabled`));
-};
-
 const activatePage = () => {
   map.classList.remove(`map--faded`);
-  const pinsFragment = window.utils.createFragment(window.map.pinsDataArray, window.pin.createPinElement);
+  const pinsFragment = window.utils.createFragment(
+      window.map.pinsDataArray,
+      window.pin.createPinElement
+  );
   mapPins.append(pinsFragment);
   adForm.classList.remove(`ad-form--disabled`);
-  removeDisabled(adFielsets);
-  removeDisabled(mapSelects);
-  updateCoordinate(pinMain, adAddress, window.data.MAIN_PIN);
+  window.utils.removeDisabled(adFielsets);
+  window.utils.removeDisabled(mapSelects);
+  window.utils.updateCoordinate(
+      pinMain,
+      adAddress,
+      window.data.MAIN_PIN);
 };
 
 const onPinMainMousedown = (evt) => {
